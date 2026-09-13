@@ -48,20 +48,27 @@
         </div>
 
         <div class="flex flex-col items-center space-y-4">
-            <h1 class="text-4xl font-extrabold text-gray-800">Ticket Dashboard</h1>
-            <p class="text-gray-500 font-medium text-lg">Generate and manage tickets</p>
-        </div>
+    <h1 class="text-4xl font-extrabold text-gray-800">Ticket Dashboard</h1>
+    <p class="text-gray-500 font-medium text-lg">Generate and manage tickets</p>
+</div>
 
-        <!-- Live status indicator -->
-        <div class="flex items-center justify-center space-x-2">
-            <span class="relative flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-            </span>
-            <p class="text-sm text-gray-500 font-medium">Live status updates every 5 seconds</p>
-        </div>
+<!-- Search Bar -->
+<div class="relative w-full mb-4">
+    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path class="w-5 h-5" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m4 0v6m-10-10V5a1 1 0 011-1h3m-3 0h3a1 1 0 011 1v6m-10-10h2M19 7h1m-6 3h2m4 7a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="Search tickets..." class="pl-9 w-full px-4 py-2 text-gray-700 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2" autocomplete="off">
+</div>
 
-        <!-- Ticket Generation Form -->
+<!-- Live status indicator -->
+<div class="flex items-center justify-center space-x-2">
+    <span class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+    </span>
+    <p class="text-sm text-gray-500 font-medium">Live status updates every 5 seconds</p>
+</div>
+
+<!-- Ticket Generation Form -->
         <div class="space-y-4">
             <h2 class="text-2xl font-bold text-gray-700">Generate New Tickets</h2>
             <div id="ticket-holders-container" class="space-y-4">
@@ -257,7 +264,7 @@
                     qrCodeLink.appendChild(qrCodeDiv);
 
                     const ticketDetails = document.createElement('div');
-                    ticketDetails.className = 'flex flex-col items-center text-center';
+                    ticketDetails.className = 'ticket-details flex flex-col items-center text-center';
 
                     const qrCodeName = document.createElement('p');
                     qrCodeName.textContent = ticket.name;
@@ -320,6 +327,7 @@
                             const data = await parseResponse(response);
                             if (response.ok) {
                                 showMessage(`Ticket for ${ticket.name} has been reset.`);
+                                fetchAllTickets();
                             } else {
                                 showMessage(data.message || 'Failed to reset ticket.', 'error');
                                 resetButton.textContent = originalText;
@@ -572,6 +580,19 @@
             // Initial setup
             addTicketHolderField();
             fetchAllTickets();
+
+            // Search functionality
+const searchInput = document.getElementById('search-input');
+function filterTickets() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const ticketContainers = qrCodesDisplay.querySelectorAll('[data-id]');
+    ticketContainers.forEach(container => {
+        const detailsText = container.innerText.toLowerCase();
+        const isMatch = !searchTerm || detailsText.includes(searchTerm);
+        container.style.display = isMatch ? '' : 'none';
+    });
+}
+searchInput.addEventListener('input', filterTickets);
 
             // Set up a periodic refresh to get the latest status
             setInterval(fetchAllTickets, 5000);
