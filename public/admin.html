@@ -11,6 +11,26 @@
 
         body {
             font-family: 'Inter', sans-serif;
+            min-width: 320px;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 80rem;
+            margin: 0 auto;
+        }
+
+        #qr-codes-display > [data-id] {
+            min-width: 0;
+        }
+
+        #qr-codes-display .ticket-details {
+            width: 100%;
+            min-width: 0;
+        }
+
+        #qr-codes-display .ticket-details p {
+            max-width: 100%;
         }
 
         .spinner {
@@ -34,9 +54,9 @@
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-100 min-h-screen flex items-start justify-center p-3 sm:p-6">
 
-    <div id="app" class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 space-y-8">
+    <div id="app" class="relative bg-white rounded-2xl shadow-xl p-4 sm:p-8 space-y-8">
         <!-- Message Box -->
         <div id="message-box" class="hidden fixed top-4 left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-lg p-4 z-50 transition-all duration-300 transform scale-95 opacity-0">
             <p id="message-text" class="text-sm font-medium"></p>
@@ -74,7 +94,7 @@
             <div id="ticket-holders-container" class="space-y-4">
                 <!-- Dynamic input fields will be added here -->
             </div>
-            <div class="flex justify-end space-x-2">
+            <div class="flex flex-wrap justify-end gap-2">
                 <button id="add-btn" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200">Add Ticket</button>
                 <button id="generate-btn" class="px-4 py-2 bg-emerald-500 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75 transition-all duration-200">
                     <span id="generate-text">Generate Tickets</span>
@@ -85,9 +105,9 @@
 
         <!-- QR Codes Display -->
         <div id="qr-codes-section" class="space-y-4">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="text-2xl font-bold text-gray-700">Generated Tickets</h2>
-                <div class="flex items-center space-x-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <button id="reset-all-btn" class="px-4 py-2 bg-amber-500 text-white font-semibold rounded-lg shadow-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-opacity-75 transition-all duration-200">
                         Reset All
                     </button>
