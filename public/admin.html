@@ -294,8 +294,13 @@
                     qrCodeClass.textContent = `Class: ${ticket.class}`;
                     qrCodeClass.className = 'text-sm text-gray-600 truncate w-full';
 
+                    const qrCodePhone =document.createElement('p');
+                    qrCodePhone.textContent = `Phone: ${ticket.phone}`;
+                    qrCodePhone.className = 'text-sm text-gray-600 truncate w-full';
+                    
                     ticketDetails.appendChild(qrCodeName);
                     ticketDetails.appendChild(qrCodeEmail);
+                    ticketDetails.appendChild(qrCodePhone);
                     ticketDetails.appendChild(qrCodeSegments);
                     ticketDetails.appendChild(qrCodeGroup);
                     ticketDetails.appendChild(qrCodeInstitute);
