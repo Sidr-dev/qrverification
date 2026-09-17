@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Generation Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -241,19 +241,56 @@
                 return '';
             }
 
+            let qrRenderVersion = 0;
+
+            function generateQrCodesInBatches(qrJobs) {
+                const renderVersion = ++qrRenderVersion;
+                let jobIndex = 0;
+                const jobsPerFrame = 4;
+
+                function processBatch() {
+                    if (renderVersion !== qrRenderVersion) {
+                        return;
+                    }
+
+                    const batchEnd = Math.min(jobIndex + jobsPerFrame, qrJobs.length);
+                    while (jobIndex < batchEnd) {
+                        const { container, ticket } = qrJobs[jobIndex++];
+                        container.textContent = '';
+                        new QRCode(container, {
+                            text: `${window.location.protocol}//${window.location.host}/index.html?id=${ticket.id}`,
+                            width: 192,
+                            height: 192,
+                            colorDark: '#000000',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    }
+
+                    if (jobIndex < qrJobs.length) {
+                        requestAnimationFrame(processBatch);
+                    }
+                }
+
+                requestAnimationFrame(processBatch);
+            }
+
             function renderTickets(tickets) {
+                qrRenderVersion++;
                 qrCodesDisplay.innerHTML = '';
                 if (tickets.length === 0) {
                     qrCodesDisplay.innerHTML = '<p class="col-span-full text-center text-gray-500 font-medium">No tickets generated yet.</p>';
                     return;
                 }
+                const qrJobs = [];
                 tickets.forEach(ticket => {
                     const qrCodeContainer = document.createElement('div');
                     qrCodeContainer.className = 'flex flex-col items-center space-y-2 bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-200';
                     qrCodeContainer.setAttribute('data-id', ticket.id);
 
                     const qrCodeDiv = document.createElement('div');
-                    qrCodeDiv.className = 'w-48 h-48 border border-gray-300 p-2 bg-white rounded-lg shadow-inner';
+                    qrCodeDiv.className = 'w-48 h-48 border border-gray-300 p-2 bg-white rounded-lg shadow-inner flex items-center justify-center text-sm text-gray-400';
+                    qrCodeDiv.textContent = 'Preparing QR code...';
 
                     const qrCodeLink = document.createElement('a');
                     qrCodeLink.href = `/index.html?id=${ticket.id}`;
@@ -408,16 +445,9 @@
 
                     qrCodesDisplay.appendChild(qrCodeContainer);
 
-                    const verificationUrl = `${window.location.protocol}//${window.location.host}/index.html?id=${ticket.id}`;
-                    new QRCode(qrCodeDiv, {
-                        text: verificationUrl,
-                        width: 192,
-                        height: 192,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
+                    qrJobs.push({ container: qrCodeDiv, ticket });
                 });
+                generateQrCodesInBatches(qrJobs);
             }
 
             // Add new ticket holder input fields (responsive grid)
